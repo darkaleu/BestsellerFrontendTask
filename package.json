@@ -1,0 +1,26 @@
+{
+  "name": "bestsellerfrontendtask2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/index.js",
+    "build": "vue-tsc -b && vite build --outDir dist/client && vite build --ssr src/entry-server.ts --outDir dist/server",
+    "start": "node server/index.js",
+    "preview": "npm run start"
+  },
+  "dependencies": {
+    "@vue/server-renderer": "^3.5.41",
+    "express": "^5.2.1",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/tsconfig": "^0.9.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2",
+    "vue-tsc": "^3.3.11"
+  }
+}
