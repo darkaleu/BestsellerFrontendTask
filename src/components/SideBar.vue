@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { fetchSubCategories, type Category } from '../services/categoryService'
-
 
 const props = defineProps<{
     activeCategoryId: string | null
@@ -14,12 +14,32 @@ const emit = defineEmits<{
 const categories = ref<Category[]>([])
 const isLoading = ref(false)
 const error = ref('')
+const router = useRouter()
 
 const activeSubCategoryId = ref<string | null>(null);
 
 const setActiveSubCategory = (categoryId: string) => {
-  activeSubCategoryId.value = categoryId
-  emit('activeSubCategoryIdChanged', categoryId)
+    activeSubCategoryId.value = categoryId
+    router.push({
+        query: {
+            ...router.currentRoute.value.query,
+            categoryId: props.activeCategoryId ?? undefined,
+            subCategoryId: categoryId,
+        },
+    })
+    emit('activeSubCategoryIdChanged', categoryId)
+}
+
+const clearActiveSubCategory = () => {
+    activeSubCategoryId.value = null
+    router.push({
+        query: {
+            ...router.currentRoute.value.query,
+            categoryId: undefined,
+            subCategoryId: undefined,
+        },
+    })
+    emit('activeSubCategoryIdChanged', '')
 }
 
 watch(
@@ -35,7 +55,6 @@ watch(
         isLoading.value = true
         try {
             categories.value = await fetchSubCategories(parentCategoryId)
-            setActiveSubCategory(categories.value[0]?.id)
         } catch {
             error.value = 'Unable to load subcategories.'
         } finally {
@@ -45,13 +64,23 @@ watch(
     { immediate: true },
 )
 
+onMounted(() => {
+    const subCategoryIdFromUrl = router.currentRoute.value.query.subCategoryId
+    if (typeof subCategoryIdFromUrl === 'string') {
+        activeSubCategoryId.value = subCategoryIdFromUrl
+        emit('activeSubCategoryIdChanged', subCategoryIdFromUrl)
+    }
+})
+
 </script>
 
 <template>
     <p v-if="isLoading">Loading subcategories...</p>
     <p v-else-if="error">{{ error }}</p>
     <aside class="sidebar" v-else-if="categories.length > 0">
-        <p class="sidebar-header">{{ props.activeCategoryId }}</p>
+        <p class="sidebar-header" @click="clearActiveSubCategory()">
+            {{ props.activeCategoryId }}
+        </p>
         <ul>
             <li v-for="category in categories" 
                 :key="category.id" 
@@ -66,7 +95,7 @@ watch(
 
 <style lang="css" scoped>
     .sidebar {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-right: 1px solid #ccc;
         padding: 16px;
         display: flex;
         flex-direction: column;
@@ -90,6 +119,7 @@ watch(
         border-bottom: 1px solid #ccc;
         padding-bottom: 4px;
         width: 100%;
+        cursor: pointer;
     }
 
     .sidebar-item {

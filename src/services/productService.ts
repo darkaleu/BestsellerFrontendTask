@@ -10,7 +10,9 @@ export interface Product {
       dk?: string
     }
     images: string[]
-    categories: string[]
+    categories: string[],
+    size: string[],
+    color: string,
   }
 
   export async function fetchProducts(): Promise<Product[]> {

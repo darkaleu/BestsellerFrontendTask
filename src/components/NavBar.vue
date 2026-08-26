@@ -29,7 +29,10 @@ onMounted(() => {
     <p v-else-if="error">{{ error }}</p>
     <template v-else>
       <template v-for="category in categories" :key="category.id">
-        <a class="navbar-item" :class="{ 'navbar-item--active': activeCategoryId === category.id }" :href="`/category/${category.id}`" @click="setActiveCategory(category.id)">{{ category.name.en }}</a>
+        <a class="navbar-item" 
+          :class="{ 'navbar-item--active': activeCategoryId === category.id }" 
+          :href="`/category/${category.id}`" 
+          @click="setActiveCategory(category.id)">{{ category.name.en }}</a>
       </template>
     </template>
   </nav>
@@ -37,7 +40,7 @@ onMounted(() => {
 
 <style lang="css" scoped>
     .navbar {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid #ccc;
         padding: 16px;
         display: flex;
         flex-direction: row;
